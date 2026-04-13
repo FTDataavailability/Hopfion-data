@@ -1,0 +1,42 @@
+Nx := 400
+Ny := 400
+Nz := 32
+c := 0.5e-9
+SetGridSize(Nx, Ny, Nz)
+SetCellSize(c, c, c)
+Msat = 1.51e5
+Aex = 0.16e-12
+Dbulk = 0.115e-3
+kb := 41e3
+
+alpha = 0.01
+
+DefRegion(0, ZRange(-8e-9, -7.5e-9))
+DefRegion(1, ZRange(-7.5e-9, 7.5e-9))
+DefRegion(2, ZRange(7.5e-9, 8e-9))
+DefRegion(3, layer(31))
+
+AnisU.setRegion(0, vector(0, 0, 1))
+Ku1.setRegion(0, kb)
+AnisU.setRegion(1, vector(0, 0, 1))
+Ku1.setRegion(1, kb)
+AnisU.setRegion(2, vector(0, 0, 1))
+Ku1.setRegion(2, kb)
+AnisU.setRegion(3, vector(0, 0, 1))
+Ku1.setRegion(3, kb)
+
+frozenspins.setRegion(0, 1)
+frozenspins.setRegion(3, 1)
+
+m.loadfile("m000013.ovf")
+setSolver(4);
+minimizerstop = 1e-6;
+autosave(CropZ(m,16,17), 1e-11)
+tableautosave(1e-11)
+TableAdd(B_ext);
+//TableAdd(ext_hopfindex_fivepointstencil);
+//TableAdd(ext_hopfindex_solidangle);
+tableAdd(E_total);
+B_ext = vector(0.0, 0.0, (-9e-3) + (0.5e-3 * Sinc(2 * pi * 40e9 * (t-1e-9)))  )
+run(40.96e-9)
+
