@@ -197,12 +197,12 @@ def main():
     phase_red_df = reduce_columns(final_phase_full, logical_cols, allowed_max)
 
     if mag_red_df is not None:
-        # --- Guardar versión sin normalizar ---
+        # --- Guardar versiÃ³n sin normalizar ---
         mag_red_name_raw = f"reduce_magnitud_{comp_mag_lbl}_raw.csv"
         mag_red_path_raw = os.path.join(OUTPUT_DIR_MAG, mag_red_name_raw)
         mag_red_df.to_csv(mag_red_path_raw, index=False)
 
-        # --- Crear y guardar versión normalizada ---
+        # --- Crear y guardar versiÃ³n normalizada ---
         mag_red_norm = mag_red_df.copy()
         cols_to_norm = mag_red_norm.columns[3:]  # ignorar pos_x,pos_y,pos_z
         mag_red_norm[cols_to_norm] = mag_red_norm[cols_to_norm].div(
