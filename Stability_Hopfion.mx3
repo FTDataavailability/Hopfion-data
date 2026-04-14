@@ -1,0 +1,46 @@
+Nx := 400
+Ny := 400
+Nz := 32
+c := 0.5e-9
+SetGridSize(Nx, Ny, Nz)
+SetCellSize(c, c, c)
+Msat = 1.51e5
+Aex = 0.16e-12
+Dbulk = 0.115e-3
+kb := 41e3
+
+alpha = 0.01
+
+DefRegion(0, ZRange(-8e-9, -7.5e-9))
+DefRegion(1, ZRange(-7.5e-9, 7.5e-9))
+DefRegion(2, ZRange(7.5e-9, 8e-9))
+DefRegion(3, layer(31))
+
+AnisU.setRegion(0, vector(0, 0, 1))
+Ku1.setRegion(0, kb)
+AnisU.setRegion(1, vector(0, 0, 1))
+Ku1.setRegion(1, kb)
+AnisU.setRegion(2, vector(0, 0, 1))
+Ku1.setRegion(2, kb)
+AnisU.setRegion(3, vector(0, 0, 1))
+Ku1.setRegion(3, kb)
+
+frozenspins.setRegion(0, 1)
+frozenspins.setRegion(3, 1)
+
+for i := 0; i < Nx; i++ {
+    for j := 0; j < Ny; j++ {
+        for k := 1; k < Nz-1; k++ {
+            r := (exp(sqrt((i-Nx/2+0.5)*(i-Nx/2+0.5)+(j-Ny/2+0.5)*(j-Ny/2+0.5))/15) - 1) / (exp(42/15) - 1)
+            phi := atan2((j - Ny/2 + 0.5), (i - Nx/2 + 0.5))
+            z := -0.2 * (k - Nz/2 + 0.5)
+            mxansatz := 4 * (2*r*z*sin(phi) + r*cos(phi)*(r*r+z*z-1)) / pow((1+r*r+z*z), 2)
+            myansatz := 4 * (-2*r*z*cos(phi) + r*sin(phi)*(r*r+z*z-1)) / pow((1+r*r+z*z), 2)
+            mzansatz := 1 - 8*r*r/pow((1+r*r+z*z), 2)
+            m.setCell(i, j, k, vector(mxansatz, myansatz, mzansatz))
+        }
+    }
+}
+minimize()
+save(m)
+
